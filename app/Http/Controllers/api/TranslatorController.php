@@ -23,10 +23,10 @@ class TranslatorController extends Controller
         Request::validate([
             'user_id' => ['required'],
             'word' => ['required'],
-            'phonetics' => ['required'],
-            'audio' => ['required'],
-            'partOfSpeech' => ['required'],
-            'definition' => ['required'],
+            // 'phonetics' => ['required'],
+            // 'audio' => ['required'],
+            // 'partOfSpeech' => ['required'],
+            // 'definition' => ['required'],
         ]);
 
         DB::table('translator')->insert([
@@ -69,5 +69,22 @@ class TranslatorController extends Controller
             'message' => 'Data saved successfully',
             'is_correct' => true,
         ], 201);
+    }
+
+    function delete($id)
+    {
+        //delete with id
+        try {
+            DB::table('translator')->where('id', $id)->delete();
+            return response()->json([
+                'message' => 'Data saved successfully',
+                'is_correct' => true,
+            ], 201);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => $th->getMessage(),
+                'is_correct' => true,
+            ], 201);
+        }
     }
 }

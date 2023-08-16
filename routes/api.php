@@ -25,3 +25,4 @@ Route::get('/get-recent/{id}', [TranslatorController::class, 'index']);
 Route::post('/add-recent', [TranslatorController::class, 'store']);
 Route::get('/set-favorite/{id}', [TranslatorController::class, 'setFavorite']);
 Route::get('/set-unFavorite/{id}', [TranslatorController::class, 'setUnFavorite']);
+Route::delete('/recent/{id}', [TranslatorController::class, 'delete']);

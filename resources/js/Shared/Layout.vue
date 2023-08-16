@@ -20,7 +20,7 @@
             </dropdown>
           </div>
           <div class="flex items-center justify-between w-full p-4 text-sm bg-white border-b md:text-md md:px-12 md:py-0">
-            <div class="mt-1 mr-4">{{ auth.user.account.name }}</div>
+            <div class="mt-1 mr-4"></div>
             <dropdown class="mt-1" placement="bottom-end">
               <template #default>
                 <div class="flex items-center cursor-pointer select-none group">

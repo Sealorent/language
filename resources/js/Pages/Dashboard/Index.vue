@@ -1,14 +1,16 @@
 
 <template>
-  <div>
+    
+  <div class="relative z-0">
     <Head title="Dashboard" />
     <h1 class="mb-8 text-3xl font-bold">Search</h1>
-    <button class="pb-2 text-xl text-gray-400">reset</button>
+    <button class="pb-2 text-xl text-gray-400" @click="reset">reset</button>
     <input v-model="searchTerms" type="text" class="w-full px-2 py-3" placeholder="Search..." @keyup.enter="fetchDictionary" />
     <!-- <p class="mb-8 leading-normal">Hey there! Welcome to Ping CRM, a demo app designed to help illustrate how <a class="text-indigo-500 underline hover:text-orange-600" href="https://inertiajs.com">Inertia.js</a> works.</p> -->
     <div v-if="isLoading" class="flex items-center justify-center w-full pt-52">
       <div class="loader"/>
     </div>
+    
     <!-- <div v-if="dictionaryEntry.length > 0" class="py-2">
       <div class="grid grid-cols-4 gap-4">
         <div v-for="(item,index) in dictionaryEntry" :key="index">
@@ -80,7 +82,11 @@ export default {
       searchTerms: '',
       dictionaryEntry: [],
       isLoading : false,
+      recent : [],
     }
+  },
+  mounted() {
+    this.getRecent();
   },
   methods: {
     async fetchDictionary() {
@@ -106,24 +112,50 @@ export default {
         this.dictionaryEntry = [];
       }
     },
-    async saveRecent(item){
-      // get id from inertia render data
+    async getRecent(){
       try { 
-        const sendData = {
-          user_id: this.id,
-          word: item.word,
-          phonetics: item.phonetics[0].text,
-          audio: item.phonetics[0].audio,
-          partOfSpeech: item.meanings[0].partOfSpeech,
-          definition: item.meanings[0].definitions[0].definition,
-        }
-        const response = await axios.post('/api/add-recent', sendData);
+        const response = await axios.get('/api/get-recent/' + this.id);
         console.log('response',response.data);
+        this.recent = response.data.data;
         this.isLoading = false;
       }catch(error){
+        this.recent = []
         this.isLoading = false;
         console.error('Error:', error)
       }
+    },
+    async saveRecent(item){
+      // check if word already exist
+      const check = this.recent.filter((recent) => recent.word === item.word);
+      if(check.length > 0){
+        this.isLoading = false;
+        console.log('already exist');
+        return;
+      }else{
+        console.log('not exist');
+        // get id from inertia render data
+        try { 
+          const sendData = {
+            user_id: this.id,
+            word: item.word,
+            phonetics: item.phonetics[0].text,
+            audio: item.phonetics[0].audio,
+            partOfSpeech: item.meanings[0].partOfSpeech,
+            definition: item.meanings[0].definitions[0].definition,
+          }
+          const response = await axios.post('/api/add-recent', sendData);
+          console.log('success');
+          console.log('response',response.data);
+          this.isLoading = false;
+        }catch(error){
+          this.isLoading = false;
+          console.error('Error:', error)
+        }
+      }
+    },
+    reset(){
+      this.searchTerms = '';
+      this.dictionaryEntry = [];
     },
     playSound() {
       const audioElement = this.$refs.audioElement;

@@ -7,7 +7,7 @@
       <button class="px-10 py-2 text-lg border-2 border-blue-300 rounded-3xl hover:border-blue-500" :class="all === false ? 'bg-yellow-500' : 'bg-gray-200'" @click="filterFavorite">Favorite</button>
     </div>
     <div v-if="recent.length > 0" class="py-2">
-      <div class="grid grid-cols-4 gap-4">
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4 ">
         <div v-for="(item,index) in recent" :key="index">
           <div class="p-4 border rounded-lg shadow-md">
             <div class="flex flex-col justify-between">
@@ -25,7 +25,12 @@
               <h3 class="text-lg font-semibold">{{ item.partOfSpeech }}</h3>
               <p class="text-gray-600">{{ item.definition }}</p>
             </div>
-            <div class="flex items-end justify-end pt-2">
+            <div class="flex items-end justify-between pt-2">
+              <button @click="deleteItem(item.id)">
+                <svg width="29" height="29" viewBox="0 0 29 29" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M4.83301 8.45833H24.1663M12.083 13.2917V20.5417M16.9163 13.2917V20.5417M6.04134 8.45833L7.24967 22.9583C7.24967 23.5993 7.50429 24.214 7.9575 24.6672C8.41071 25.1204 9.0254 25.375 9.66634 25.375H19.333C19.9739 25.375 20.5886 25.1204 21.0418 24.6672C21.4951 24.214 21.7497 23.5993 21.7497 22.9583L22.958 8.45833M10.8747 8.45833V4.83333C10.8747 4.51286 11.002 4.20552 11.2286 3.97891C11.4552 3.75231 11.7625 3.625 12.083 3.625H16.9163C17.2368 3.625 17.5442 3.75231 17.7708 3.97891C17.9974 4.20552 18.1247 4.51286 18.1247 4.83333V8.45833" stroke="#FF2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
               <h3 class="text-end">
                 <button v-if="item.isFavourite" @click="setUnFavorite(item.id)">
                   <svg width="29" height="24" viewBox="0 0 29 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -97,6 +102,16 @@ export default {
     },
     async setUnFavorite(id){
       await axios.get(`/api/set-unFavorite/${id}`)
+        .then(response => {
+          this.fetch()
+          console.log('success:', response);
+        })
+        .catch(error => {
+          console.error('Error:', error)
+        })  
+    },
+    async deleteItem(id){
+      await axios.delete(`/api/recent/${id}`)
         .then(response => {
           this.fetch()
           console.log('success:', response);
